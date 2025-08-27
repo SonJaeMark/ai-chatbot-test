@@ -1,38 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI Chatbot Test</title>
   <style>
-    body { font-family: Arial, sans-serif; max-width: 600px; margin: 20px auto; }
-    #chat { border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: auto; }
-    input { width: 80%; padding: 8px; }
-    button { padding: 8px 12px; }
-    .user { color: blue; }
-    .bot { color: green; }
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 20px auto;
+    }
+    #chat {
+      border: 1px solid #ccc;
+      padding: 10px;
+      height: 300px;
+      overflow-y: auto;
+      background: #f9f9f9;
+    }
+    .message {
+      margin: 5px 0;
+      padding: 6px 10px;
+      border-radius: 8px;
+      max-width: 80%;
+      clear: both;
+    }
+    .user {
+      background: #e0f0ff;
+      color: #004080;
+      float: right;
+      text-align: right;
+    }
+    .bot {
+      background: #e6ffe6;
+      color: #006600;
+      float: left;
+      text-align: left;
+    }
+    #input-area {
+      margin-top: 10px;
+      display: flex;
+    }
+    #message {
+      flex: 1;
+      padding: 8px;
+    }
+    button {
+      padding: 8px 12px;
+      margin-left: 5px;
+    }
   </style>
 </head>
 <body>
   <h1>Chat with My AI</h1>
   <div id="chat"></div>
-  <input id="message" placeholder="Type a message..." />
-  <button onclick="sendMessage()">Send</button>
+  <div id="input-area">
+    <input id="message" placeholder="Type a message..." />
+    <button onclick="sendMessage()">Send</button>
+  </div>
 
   <script>
     const chatBox = document.getElementById("chat");
+    const input = document.getElementById("message");
 
     function appendMessage(sender, text) {
       const div = document.createElement("div");
-      div.className = sender;
-      div.textContent = sender.toUpperCase() + ": " + text;
+      div.className = "message " + sender;
+      div.textContent = text;
       chatBox.appendChild(div);
       chatBox.scrollTop = chatBox.scrollHeight;
     }
 
     async function sendMessage() {
-      const input = document.getElementById("message");
       const message = input.value.trim();
       if (!message) return;
 
@@ -46,12 +84,21 @@
           body: JSON.stringify({ message })
         });
 
+        if (!response.ok) {
+          throw new Error(`Server error: ${response.status}`);
+        }
+
         const data = await response.json();
         appendMessage("bot", data.reply || "No reply");
       } catch (err) {
-        appendMessage("bot", "Error: " + err.message);
+        appendMessage("bot", "⚠️ Error: " + err.message + " (maybe CORS issue)");
       }
     }
+
+    // Allow pressing Enter to send
+    input.addEventListener("keypress", function(e) {
+      if (e.key === "Enter") sendMessage();
+    });
   </script>
 </body>
 </html>
