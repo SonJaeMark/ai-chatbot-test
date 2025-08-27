@@ -80,7 +80,10 @@
       try {
         const response = await fetch("https://ai-chatbot-iqog.onrender.com/ai/chat", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { 
+                "Content-Type": "application/json",
+                "X-API-KEY": "MY_SECRET_KEY_12345" 
+            },
           body: JSON.stringify({ message })
         });
 
